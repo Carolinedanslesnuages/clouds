@@ -3,31 +3,41 @@ import nodemailer from 'nodemailer';
 import cors from 'cors';
 import * as dotenv from 'dotenv';
 
+// Charger les variables d'environnement
 dotenv.config();
 
 const app = express();
-app.use(cors());
+
+// Middleware
+app.use(cors({
+  origin: 'http://localhost:3000', // Remplace par l'URL de ton front-end ou '*' si accessible par tous
+  methods: ['POST'],
+  allowedHeaders: ['Content-Type']
+}));
 app.use(express.json());
 
 // Configuration du transporteur d'email
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: process.env.EMAIL_ADDRESS,
-    pass: process.env.EMAIL_PASSWORD
+    user: process.env.EMAIL_ADDRESS, // Ton email
+    pass: process.env.EMAIL_PASSWORD // Mot de passe d'application Gmail
   }
 });
 
+// Vérification du transporteur
 transporter.verify((error, success) => {
   if (error) {
-    console.error('Erreur de connexion :', error);
+    console.error('Erreur de connexion au service email :', error);
   } else {
-    console.log('Prêt à envoyer des emails !');
+    console.log('Transporteur d\'email prêt à l\'envoi');
   }
 });
 
+// Route pour soumettre l'humeur
 app.post('/api/submit-mood', async (req, res) => {
   const { mood, comment } = req.body;
+
   const date = new Date().toLocaleDateString('fr-FR');
   const time = new Date().toLocaleTimeString('fr-FR');
 
@@ -46,13 +56,15 @@ app.post('/api/submit-mood', async (req, res) => {
 
   try {
     await transporter.sendMail(mailOptions);
+    console.log('Email envoyé avec succès');
     res.json({ success: true });
   } catch (error) {
-    console.error('Erreur d\'envoi:', error);
+    console.error('Erreur lors de l\'envoi de l\'email :', error.message);
     res.status(500).json({ error: 'Erreur lors de l\'envoi de l\'email' });
   }
 });
 
+// Démarrage du serveur
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Serveur démarré sur le port ${PORT}`);
