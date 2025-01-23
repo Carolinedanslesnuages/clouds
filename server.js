@@ -18,6 +18,14 @@ const transporter = nodemailer.createTransport({
   }
 });
 
+transporter.verify((error, success) => {
+  if (error) {
+    console.error('Erreur de connexion :', error);
+  } else {
+    console.log('Prêt à envoyer des emails !');
+  }
+});
+
 app.post('/api/submit-mood', async (req, res) => {
   const { mood, comment } = req.body;
   const date = new Date().toLocaleDateString('fr-FR');
