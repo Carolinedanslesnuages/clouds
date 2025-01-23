@@ -10,8 +10,11 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: 'http://localhost:3000', // Remplace par l'URL de ton front-end ou '*' si accessible par tous
-  methods: ['POST'],
+  origin: [
+    'http://localhost:3000', // Autoriser les requêtes locales pour le développement
+    'https://clouds-blue-two.vercel.app' // Remplace par ton domaine Vercel
+  ],
+  methods: ['GET', 'POST'],
   allowedHeaders: ['Content-Type']
 }));
 app.use(express.json());
