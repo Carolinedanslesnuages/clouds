@@ -24,7 +24,7 @@ function App() {
     };
 
     try {
-      const response = await fetch('http://localhost:3000/api/submit-mood', {
+      const response = await fetch('https://clouds-blue-two.vercel.app/api/submit-mood', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
